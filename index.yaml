@@ -1,0 +1,203 @@
+swagger: '2.0'
+info:
+  description: 'The Schema for the Rimmu Training API'
+  version: '1.0.0'
+  title: 'Rimmu Training API'
+  termsOfService: 'https://rimmugygur.is/api/terms-of-service'
+  contact:
+    email: 'r@exampe.com'
+  license:
+    name: 'Apache 2.0'
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+host: 'petstore.swagger.io'
+basePath: '/v2'
+tags:
+  - name: 'attendances'
+    description: "Information about a member's attendance to a practice"
+  - name: 'users'
+    description: 'Operations about user'
+    externalDocs:
+      description: 'Find out more about our store'
+      url: 'http://swagger.io'
+schemes:
+  - 'https'
+  - 'http'
+paths:
+  /attendances:
+    post:
+      tags:
+        - 'attendances'
+      summary: "Register a member's attendance"
+      operationId: 'registerAttendance'
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - name: 'practiceId'
+          in: 'header'
+          description: 'Uuid of the practice to register to'
+          required: true
+          type: 'string'
+          format: 'uuid'
+        - name: 'memberId'
+          in: 'header'
+          description: 'Uuid of the practice to register to'
+          required: true
+          type: 'string'
+          format: 'uuid'
+      responses:
+        201:
+          description: 'Sucessfully registered the attendance'
+          schema:
+            type: 'object'
+            properties:
+              id:
+                type: 'string'
+                format: 'guid'
+              practiceId:
+                type: 'string'
+                format: 'guid'
+              memberId:
+                type: 'string'
+                format: 'guid'
+        403:
+          description: 'Not Authorized'
+    get:
+      tags:
+        - 'attendances'
+      summary: 'Gets all attendances for a practice'
+      description: 'Gets all attendances the user has access to if a practice Id is not given'
+      operationId: 'getAttendance'
+      consumes:
+        - 'application/json'
+      produces:
+        - 'application/json'
+      parameters:
+        - in: 'query'
+          name: 'practiceId'
+          type: 'string'
+          format: 'uuid'
+      responses:
+        200:
+          description: 'Sucessfully retrieved attendances'
+          schema:
+            type: 'array'
+            items:
+              $ref: '#/definitions/Attendance'
+        403:
+          description: 'Not Authorized'
+  /users:
+    post:
+      tags:
+        - 'users'
+      summary: 'Create user'
+      description: 'This can only be done by the logged in user.'
+      operationId: 'createUser'
+      produces:
+        - 'application/xml'
+        - 'application/json'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'Created user object'
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        default:
+          description: 'successful operation'
+definitions:
+  Attendance:
+    type: 'object'
+    properties:
+      id:
+        type: 'string'
+        format: 'guid'
+      practiceId:
+        type: 'string'
+        format: 'guid'
+      memberId:
+        type: 'string'
+        format: 'guid'
+  Practice:
+    type: 'object'
+    properties:
+      id:
+        type: 'string'
+        format: 'guid'
+      start:
+        type: 'string'
+        description: 'The start time of practice'
+        format: 'date-time'
+        example: '2020-03-12T20:00:00Z'
+      end:
+        type: 'string'
+        description: 'The end time of practice'
+        format: 'date-time'
+        example: '2020-03-12T20:00:00Z'
+      type:
+        type: 'string'
+        description: 'The type of practice'
+      member:
+        $ref: '#/definitions/Member'
+  Member:
+    type: 'object'
+    properties:
+      id:
+        type: 'string'
+        format: 'guid'
+      name:
+        type: 'string'
+  User:
+    type: 'object'
+    properties:
+      id:
+        type: 'string'
+        format: 'guid'
+      username:
+        type: 'string'
+      firstName:
+        type: 'string'
+      lastName:
+        type: 'string'
+      email:
+        type: 'string'
+      password:
+        type: 'string'
+      phone:
+        type: 'string'
+      roles:
+        type: 'object' # TODO - assert to be Teacher or Admin
+  Admin:
+    type: 'object'
+  Teacher:
+    type: 'object'
+  Event:
+    type: 'object'
+    properties:
+      id:
+        type: 'string'
+        format: 'guid'
+      name:
+        type: 'string'
+      date:
+        type: 'string'
+        description: 'The event date'
+        format: 'date-time'
+        example: '2020-03-12T20:00:00Z'
+      member:
+        $ref: '#/definitions/Member'
+  ApiResponse:
+    type: 'object'
+    properties:
+      code:
+        type: 'integer'
+        format: 'int32'
+      type:
+        type: 'string'
+      message:
+        type: 'string'
+externalDocs:
+  description: 'Find out more about Swagger'
+  url: 'http://swagger.io'
