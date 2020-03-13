@@ -1,0 +1,356 @@
+openapi: 3.0.0
+info:
+  title: Rimmu Training API
+  description: The Schema for the Rimmu Training API
+  termsOfService: https://rimmugygur.is/api/terms-of-service
+  contact:
+    email: r@exampe.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+- url: /
+tags:
+- name: Attendances
+  description: Information about a member's attendance to a practice
+- name: Users
+  description: Operations about user
+- name: Practices
+  description: Information about one or more practice occasions
+- name: Members
+  description: Information about one or more members
+paths:
+  /attendances:
+    get:
+      tags:
+      - Attendances
+      summary: Gets all attendances for a practice
+      description: Gets all attendances the user has access to if a practice Id is
+        not given
+      operationId: getAttendance
+      parameters:
+      - name: practiceId
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: Sucessfully retrieved attendances
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Attendance'
+                x-content-type: application/json
+        "403":
+          description: Not Authorized
+      x-swagger-router-controller: Attendances
+    post:
+      tags:
+      - Attendances
+      summary: Register a member's attendance
+      operationId: registerAttendance
+      parameters:
+      - name: practiceId
+        in: header
+        description: Uuid of the practice to register to
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+      - name: memberId
+        in: header
+        description: Uuid of the practice to register to
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "201":
+          description: Sucessfully registered the attendance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_201'
+        "403":
+          description: Not Authorized
+      x-swagger-router-controller: Attendances
+  /practices:
+    get:
+      tags:
+      - Practices
+      summary: Gets all practices
+      description: Gets all practices, filterable by member id, start date and end
+        date
+      operationId: getPractices
+      parameters:
+      - name: clientId
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: guid
+      - name: start
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: datetime
+      - name: end
+        in: query
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: datetime
+      responses:
+        "200":
+          description: Sucessfully retrieved attendances
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Practice'
+                x-content-type: application/json
+      x-swagger-router-controller: Practices
+    post:
+      tags:
+      - Practices
+      summary: Add a practice occasion
+      operationId: addPractice
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Practice'
+      responses:
+        "201":
+          description: Successfully added a practice occasion
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Practice'
+      x-swagger-router-controller: Practices
+  /practices/{id}:
+    get:
+      tags:
+      - Practices
+      summary: Gets a practice
+      description: Gets all practices, filterable by member id, start date and end
+        date
+      operationId: getPracticeById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: guid
+      responses:
+        "200":
+          description: Sucessfully retrieved attendances
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Practice'
+                x-content-type: application/json
+      x-swagger-router-controller: Practices
+  /members:
+    get:
+      tags:
+      - Members
+      summary: Gets all members
+      operationId: getMembers
+      responses:
+        "200":
+          description: Sucessfully retrieved members
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Member'
+                x-content-type: application/json
+      x-swagger-router-controller: Members
+    post:
+      tags:
+      - Members
+      summary: Adds a new member
+      operationId: addMember
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Member'
+      responses:
+        "201":
+          description: Successfully added a practice occasion
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Member'
+      x-swagger-router-controller: Members
+  /members/{id}:
+    get:
+      tags:
+      - Members
+      summary: Gets a single member by their id
+      operationId: getMemberById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: guid
+      responses:
+        "200":
+          description: Sucessfully retrieved attendances
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Practice'
+                x-content-type: application/json
+      x-swagger-router-controller: Members
+  /users:
+    post:
+      tags:
+      - Users
+      summary: Create user
+      description: This can only be done by the logged in user.
+      operationId: createUser
+      parameters:
+      - name: body
+        in: header
+        description: Created user object
+        required: true
+        style: simple
+        explode: false
+        schema:
+          $ref: '#/components/schemas/User'
+      responses:
+        default:
+          description: successful operation
+      x-swagger-router-controller: Users
+components:
+  schemas:
+    Attendance:
+      type: object
+      properties:
+        id:
+          type: string
+          format: guid
+          readOnly: true
+        practiceId:
+          type: string
+          format: guid
+        memberId:
+          type: string
+          format: guid
+      example:
+        practiceId: practiceId
+        id: id
+        memberId: memberId
+    Practice:
+      type: object
+      properties:
+        id:
+          type: string
+          format: guid
+          readOnly: true
+        start:
+          type: string
+          description: The start time of practice
+          format: datetime
+          example: 2020-03-12T20:00:00Z
+        end:
+          type: string
+          description: The end time of practice
+          format: datetime
+          example: 2020-03-12T22:00:00Z
+        type:
+          type: string
+          description: The type of practice
+        member:
+          $ref: '#/components/schemas/Member'
+      example:
+        start: 2020-03-12T20:00:00Z
+        member:
+          name: name
+          id: id
+        end: 2020-03-12T22:00:00Z
+        id: id
+        type: type
+    Member:
+      type: object
+      properties:
+        id:
+          type: string
+          format: guid
+          readOnly: true
+        name:
+          type: string
+      example:
+        name: name
+        id: id
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: guid
+          readOnly: true
+        username:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        phone:
+          type: string
+        roles:
+          type: object
+    inline_response_201:
+      type: object
+      properties:
+        id:
+          type: string
+          format: guid
+        practiceId:
+          type: string
+          format: guid
+        memberId:
+          type: string
+          format: guid
+      example:
+        practiceId: practiceId
+        id: id
+        memberId: memberId
