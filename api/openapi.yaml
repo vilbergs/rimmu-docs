@@ -10,114 +10,116 @@ info:
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   version: 1.0.0
 servers:
-- url: /
+  - url: /
 tags:
-- name: Attendances
-  description: Information about a member's attendance to a practice
-- name: Users
-  description: Operations about user
-- name: Practices
-  description: Information about one or more practice occasions
-- name: Members
-  description: Information about one or more members
+  - name: Attendances
+    description: Information about a member's attendance to a practice
+  - name: Users
+    description: Operations about user
+  - name: Practices
+    description: Information about one or more practice occasions
+  - name: Members
+    description: Information about one or more members
 paths:
   /attendances:
-    get:
-      tags:
-      - Attendances
-      summary: Gets all attendances for a practice
-      description: Gets all attendances the user has access to if a practice Id is
-        not given
-      operationId: getAttendance
-      parameters:
-      - name: practiceId
-        in: query
-        required: false
-        style: form
-        explode: true
-        schema:
-          type: string
-          format: uuid
-      responses:
-        "200":
-          description: Sucessfully retrieved attendances
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Attendance'
-                x-content-type: application/json
-        "403":
-          description: Not Authorized
-      x-swagger-router-controller: Attendances
     post:
       tags:
-      - Attendances
+        - Attendances
       summary: Register a member's attendance
       operationId: registerAttendance
       parameters:
-      - name: practiceId
-        in: header
-        description: Uuid of the practice to register to
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          format: uuid
-      - name: memberId
-        in: header
-        description: Uuid of the practice to register to
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          format: uuid
+        - name: practiceId
+          in: header
+          description: Uuid of the practice to register to
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+            format: uuid
+        - name: memberId
+          in: header
+          description: Uuid of the practice to register to
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+            format: uuid
       responses:
         "201":
           description: Sucessfully registered the attendance
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_201'
+                $ref: "#/components/schemas/inline_response_201"
+        "403":
+          description: Not Authorized
+      x-swagger-router-controller: Attendances
+    get:
+      tags:
+        - Attendances
+      summary: Gets all attendances for a practice
+      description:
+        Gets all attendances the user has access to if a practice Id is
+        not given
+      operationId: getAttendance
+      parameters:
+        - name: practiceId
+          in: query
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Sucessfully retrieved attendances
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Attendance"
+                x-content-type: application/json
         "403":
           description: Not Authorized
       x-swagger-router-controller: Attendances
   /practices:
     get:
       tags:
-      - Practices
+        - Practices
       summary: Gets all practices
-      description: Gets all practices, filterable by member id, start date and end
+      description:
+        Gets all practices, filterable by member id, start date and end
         date
       operationId: getPractices
       parameters:
-      - name: clientId
-        in: query
-        required: false
-        style: form
-        explode: true
-        schema:
-          type: string
-          format: guid
-      - name: start
-        in: query
-        required: false
-        style: form
-        explode: true
-        schema:
-          type: string
-          format: datetime
-      - name: end
-        in: query
-        required: false
-        style: form
-        explode: true
-        schema:
-          type: string
-          format: datetime
+        - name: clientId
+          in: query
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+            format: guid
+        - name: start
+          in: query
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+            format: datetime
+        - name: end
+          in: query
+          required: false
+          style: form
+          explode: true
+          schema:
+            type: string
+            format: datetime
       responses:
         "200":
           description: Sucessfully retrieved attendances
@@ -126,44 +128,45 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Practice'
+                  $ref: "#/components/schemas/Practice"
                 x-content-type: application/json
       x-swagger-router-controller: Practices
     post:
       tags:
-      - Practices
+        - Practices
       summary: Add a practice occasion
       operationId: addPractice
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Practice'
+              $ref: "#/components/schemas/Practice"
       responses:
         "201":
           description: Successfully added a practice occasion
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Practice'
+                $ref: "#/components/schemas/Practice"
       x-swagger-router-controller: Practices
   /practices/{id}:
     get:
       tags:
-      - Practices
+        - Practices
       summary: Gets a practice
-      description: Gets all practices, filterable by member id, start date and end
+      description:
+        Gets all practices, filterable by member id, start date and end
         date
       operationId: getPracticeById
       parameters:
-      - name: id
-        in: path
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          format: guid
+        - name: id
+          in: path
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+            format: guid
       responses:
         "200":
           description: Sucessfully retrieved attendances
@@ -172,13 +175,13 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Practice'
+                  $ref: "#/components/schemas/Practice"
                 x-content-type: application/json
       x-swagger-router-controller: Practices
   /members:
     get:
       tags:
-      - Members
+        - Members
       summary: Gets all members
       operationId: getMembers
       responses:
@@ -189,42 +192,63 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Member'
+                  $ref: "#/components/schemas/Member"
                 x-content-type: application/json
       x-swagger-router-controller: Members
     post:
       tags:
-      - Members
+        - Members
       summary: Adds a new member
       operationId: addMember
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Member'
+              $ref: "#/components/schemas/Member"
       responses:
         "201":
           description: Successfully added a practice occasion
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Member'
+                $ref: "#/components/schemas/Member"
+        "400":
+          description: The Input parameters are invalid
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  allOf:
+                    - $ref: "#/components/schemas/ErrorResponse"
+                  type: object
+                  properties:
+                    status:
+                      type: string
+                      enum:
+                        - "400"
+                    code:
+                      type: string
+                      enum:
+                        - NAME_TOO_SHORT
+                        - NAME_TOO_LONG
+                        - REQUEST_VALIDATION_ERROR
       x-swagger-router-controller: Members
   /members/{id}:
     get:
       tags:
-      - Members
+        - Members
       summary: Gets a single member by their id
       operationId: getMemberById
       parameters:
-      - name: id
-        in: path
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-          format: guid
+        - name: id
+          in: path
+          required: true
+          style: simple
+          explode: false
+          schema:
+            type: string
+            format: guid
       responses:
         "200":
           description: Sucessfully retrieved attendances
@@ -233,25 +257,25 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Practice'
+                  $ref: "#/components/schemas/Practice"
                 x-content-type: application/json
       x-swagger-router-controller: Members
   /users:
     post:
       tags:
-      - Users
+        - Users
       summary: Create user
       description: This can only be done by the logged in user.
       operationId: createUser
       parameters:
-      - name: body
-        in: header
-        description: Created user object
-        required: true
-        style: simple
-        explode: false
-        schema:
-          $ref: '#/components/schemas/User'
+        - name: body
+          in: header
+          description: Created user object
+          required: true
+          style: simple
+          explode: false
+          schema:
+            $ref: "#/components/schemas/User"
       responses:
         default:
           description: successful operation
@@ -296,7 +320,7 @@ components:
           type: string
           description: The type of practice
         member:
-          $ref: '#/components/schemas/Member'
+          $ref: "#/components/schemas/Member"
       example:
         start: 2020-03-12T20:00:00Z
         member:
@@ -338,6 +362,21 @@ components:
           type: string
         roles:
           type: object
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          description: "A HTTP status code expressed as a string"
+        code:
+          type: string
+          description: "An ENUM code representing the error"
+        title:
+          type: string
+          description: "A short, human-readable summary of the problem"
+        detail:
+          type: string
+          description: "A human-readable explanation specific to this occurrence of the problem"
     inline_response_201:
       type: object
       properties:
